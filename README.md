@@ -58,6 +58,7 @@ import "tree-sitter-ts-highlight/themes/github-dark.css";
 - `createHighlightedDiffHtmlStore({ oldCode, newCode, language, options? })`
 
 All exports from `tree-sitter-ts-highlight` are also re-exported.
+Type exports from `tree-sitter-ts-highlight` and `Token` from `tree-sitter-ts` are re-exported for TypeScript consumers.
 
 ## Notes
 

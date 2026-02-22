@@ -1,4 +1,4 @@
-import { createDiffRenderable, createHighlightRenderable, cssTextToStyleObject, styleObjectToCssText, } from "./svelte-renderer";
+import { createDiffRenderable, createHighlightRenderable, cssTextToStyleObject, styleObjectToCssText, } from "../lib/svelte-renderer";
 const tokenizeMock = jest.fn();
 const enhanceSemanticsMock = jest.fn();
 const groupTokensByLineMock = jest.fn();
@@ -51,6 +51,7 @@ describe("svelte renderer utilities", () => {
             startLine: 10,
             decorations: [{ line: 1 }],
             theme: {
+                name: "test-theme",
                 background: "#111",
                 foreground: "#eee",
                 styles: { keyword: "color: #f00" },

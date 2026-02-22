@@ -26,4 +26,6 @@ export {
     cssTextToStyleObject,
 } from "./lib/svelte-renderer";
 
+export type { Token } from "tree-sitter-ts";
+export type * from "tree-sitter-ts-highlight";
 export * from "tree-sitter-ts-highlight";

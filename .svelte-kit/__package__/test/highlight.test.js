@@ -1,5 +1,5 @@
 import { get, writable } from "svelte/store";
-import { createHighlightedDiffHtmlStore, createHighlightedHtmlStore, getHighlightedDiffHtml, getHighlightedHtml, } from "./highlight";
+import { createHighlightedDiffHtmlStore, createHighlightedHtmlStore, getHighlightedDiffHtml, getHighlightedHtml, } from "../lib/highlight";
 const highlightMock = jest.fn();
 const highlightDiffMock = jest.fn();
 jest.mock("tree-sitter-ts-highlight", () => ({

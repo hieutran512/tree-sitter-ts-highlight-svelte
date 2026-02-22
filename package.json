@@ -1,6 +1,6 @@
 {
     "name": "tree-sitter-ts-highlight-svelte",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "Native Svelte wrapper components for tree-sitter-ts-highlight.",
     "type": "module",
     "svelte": "./dist/index.js",
@@ -26,8 +26,8 @@
     },
     "peerDependencies": {
         "svelte": "^5.0.0",
-        "tree-sitter-ts": "^0.1.1",
-        "tree-sitter-ts-highlight": "^0.1.1"
+        "tree-sitter-ts": "^0.1.2",
+        "tree-sitter-ts-highlight": "^0.1.2"
     },
     "devDependencies": {
         "@sveltejs/package": "^2.3.7",
@@ -50,6 +50,10 @@
         "typescript",
         "code-highlighting"
     ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/hieutran512/tree-sitter-ts-highlight-svelte"
+    },
     "license": "MIT",
     "engines": {
         "node": ">=18.0.0"

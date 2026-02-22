@@ -24,7 +24,7 @@
         "test": "jest",
         "test:watch": "jest --watch",
         "docs:prepare": "tsx scripts/prepare-docs-runtime.ts",
-        "docs:serve": "npm run docs:prepare && http-server docs -p 4173 -c-1"
+        "docs:serve": "npm run docs:prepare && http-server docs -p 4174 -c-1"
     },
     "peerDependencies": {
         "svelte": "^5.0.0",

@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>tree-sitter-ts-highlight-svelte</title>
+    <meta name="description"
+        content="Native Svelte wrapper for tree-sitter-ts-highlight with docs, usage examples, and live highlighting demos." />
+
+    <script type="importmap">
+    {
+      "imports": {
+        "tree-sitter-ts": "./runtime/tree-sitter-ts-proxy.js",
+        "tree-sitter-ts-highlight": "./runtime/tree-sitter-ts-highlight-proxy.js",
+        "tree-sitter-ts-highlight-svelte/highlight": "./runtime/tree-sitter-ts-highlight-svelte-proxy.js",
+        "svelte/store": "https://esm.sh/svelte@5.38.10/store"
+      }
+    }
+    </script>
+
+    <style>
+        :root {
+            --bg: #0b1020;
+            --bg-soft: #111831;
+            --surface: #182240;
+            --text: #e9eefb;
+            --text-muted: #a8b3d6;
+            --primary: #7ea2ff;
+            --primary-strong: #5c85ff;
+            --border: #2b3966;
+            --ok: #68d391;
+            --error: #ff9da7;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Inter, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+            background: radial-gradient(circle at top, #17264c 0%, var(--bg) 48%);
+            color: var(--text);
+            line-height: 1.55;
+        }
+
+        .container {
+            width: min(1100px, 92vw);
+            margin: 0 auto;
+        }
+
+        .site-header {
+            position: sticky;
+            top: 0;
+            backdrop-filter: blur(10px);
+            background: rgba(11, 16, 32, 0.75);
+            border-bottom: 1px solid rgba(126, 162, 255, 0.25);
+            z-index: 10;
+        }
+
+        .site-header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.9rem 0;
+        }
+
+        .brand {
+            font-weight: 700;
+            color: var(--text);
+            text-decoration: none;
+        }
+
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.9rem;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+
+        nav a:hover {
+            color: var(--text);
+        }
+
+        .hero {
+            padding: 4.5rem 0 2.5rem;
+        }
+
+        .hero h1 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            margin: 0 0 1rem;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            color: var(--text-muted);
+            max-width: 72ch;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1.4rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            border-radius: 10px;
+            padding: 0.65rem 0.9rem;
+            border: 1px solid var(--border);
+            color: var(--text);
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 600;
+        }
+
+        .btn.primary {
+            border-color: var(--primary);
+            background: var(--primary-strong);
+        }
+
+        section {
+            margin: 2rem 0;
+            padding: 1.4rem;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: linear-gradient(180deg, rgba(24, 34, 64, 0.72), rgba(24, 34, 64, 0.5));
+        }
+
+        section h2 {
+            margin-top: 0;
+        }
+
+        .grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .grid.cols-2 {
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        }
+
+        .card {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem;
+            background: rgba(17, 24, 49, 0.75);
+        }
+
+        code,
+        pre {
+            font-family: Consolas, Monaco, ui-monospace, SFMono-Regular, Menlo, monospace;
+        }
+
+        pre {
+            margin: 0;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: #0a1228;
+            color: #dbe5ff;
+            padding: 0.85rem;
+            overflow-x: auto;
+            font-size: 0.92rem;
+        }
+
+        .subtle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .tag {
+            display: inline-block;
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 0.2rem 0.55rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-right: 0.35rem;
+        }
+
+        .demo-controls {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.8rem;
+        }
+
+        .demo-controls button {
+            cursor: pointer;
+            border: 1px solid var(--border);
+            background: var(--bg-soft);
+            color: var(--text);
+            border-radius: 8px;
+            padding: 0.45rem 0.7rem;
+        }
+
+        .demo-output {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0.8rem;
+            background: #0a1228;
+            min-height: 92px;
+        }
+
+        .runtime {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: var(--ok);
+        }
+
+        .dot.warn {
+            background: #ffd36a;
+        }
+
+        .dot.error {
+            background: var(--error);
+        }
+
+        .error-box {
+            border: 1px solid var(--error);
+            color: #ffd9de;
+            background: rgba(255, 80, 100, 0.08);
+            border-radius: 10px;
+            padding: 0.9rem;
+            white-space: pre-wrap;
+        }
+
+        .footer {
+            color: var(--text-muted);
+            margin: 2rem auto 3.5rem;
+            text-align: center;
+        }
+
+        .check {
+            color: var(--ok);
+        }
+    </style>
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="container">
+            <a class="brand" href="#top">tree-sitter-ts-highlight-svelte</a>
+            <nav>
+                <a href="#install">Install</a>
+                <a href="#usage">Usage</a>
+                <a href="#api">API</a>
+                <a href="#demo">Live Demo</a>
+            </nav>
+        </div>
+    </header>
+
+    <main id="top" class="container">
+        <section class="hero">
+            <h1>Native Svelte syntax highlighting for TypeScript & TSX</h1>
+            <p>
+                <span class="tag">Svelte 5</span>
+                <span class="tag">tree-sitter</span>
+                <span class="tag">SSR friendly</span>
+            </p>
+            <p>
+                `tree-sitter-ts-highlight-svelte` provides Svelte components plus utility functions for highlighted code
+                and diffs,
+                powered by <code>tree-sitter-ts-highlight</code>.
+            </p>
+            <div class="hero-actions">
+                <a class="btn primary" href="#demo">Try live demo</a>
+                <a class="btn" href="https://www.npmjs.com/package/tree-sitter-ts-highlight-svelte" target="_blank"
+                    rel="noreferrer">npm package</a>
+            </div>
+            <div id="runtimeStatus" class="runtime"><span class="dot warn"></span><span>Initializing runtime…</span>
+            </div>
+        </section>
+
+        <section id="install">
+            <h2>Install</h2>
+            <pre><code>npm install tree-sitter-ts-highlight-svelte tree-sitter-ts-highlight tree-sitter-ts</code></pre>
+            <p class="subtle">Import a theme from the base package in your app entry.</p>
+            <pre><code>import "tree-sitter-ts-highlight/themes/github-dark.css";</code></pre>
+        </section>
+
+        <section id="usage">
+            <h2>Usage in Svelte</h2>
+            <div class="grid cols-2">
+                <div class="card">
+                    <h3>Components</h3>
+                    <pre><code>&lt;script lang="ts"&gt;
+  import { Highlight, HighlightDiff } from "tree-sitter-ts-highlight-svelte";
+
+  const before = `const n = 1;`;
+  const after = `const n = 2;`;
+&lt;/script&gt;
+
+&lt;Highlight code={`const n: number = 42;`} language="typescript" /&gt;
+
+&lt;HighlightDiff
+  oldCode={before}
+  newCode={after}
+  language="typescript"
+  options={{ view: "side-by-side" }}
+/&gt;</code></pre>
+                </div>
+                <div class="card">
+                    <h3>Utility functions</h3>
+                    <pre><code>import {
+  getHighlightedHtml,
+  getHighlightedDiffHtml
+} from "tree-sitter-ts-highlight-svelte";
+
+const html = getHighlightedHtml({
+  code: "const total = 42;",
+  language: "typescript"
+});
+
+const diffHtml = getHighlightedDiffHtml({
+  oldCode: "const n = 1;",
+  newCode: "const n = 2;",
+  language: "typescript"
+});</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <section id="api">
+            <h2>API overview</h2>
+            <div class="grid cols-2">
+                <div class="card">
+                    <p><span class="check">✓</span> <code>Highlight</code> – render highlighted code as native Svelte
+                        nodes.</p>
+                    <p><span class="check">✓</span> <code>HighlightDiff</code> – render inline or side-by-side diffs.
+                    </p>
+                    <p><span class="check">✓</span> <code>getHighlightedHtml</code> and
+                        <code>getHighlightedDiffHtml</code>.
+                    </p>
+                </div>
+                <div class="card">
+                    <p><span class="check">✓</span> Reactive stores: <code>createHighlightedHtmlStore</code>,
+                        <code>createHighlightedDiffHtmlStore</code>.
+                    </p>
+                    <p><span class="check">✓</span> Re-exports all of <code>tree-sitter-ts-highlight</code>.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="demo">
+            <h2>Live demo (utility APIs)</h2>
+            <p class="subtle">This demo runs in the browser using utility APIs from the Svelte package.</p>
+            <div class="demo-controls">
+                <button id="sampleTs">TypeScript sample</button>
+                <button id="sampleTsx">TSX sample</button>
+                <button id="sampleDiff">Diff sample</button>
+            </div>
+            <div class="grid cols-2">
+                <div class="card">
+                    <h3>Input</h3>
+                    <pre id="demoInput"></pre>
+                </div>
+                <div class="card">
+                    <h3>Output</h3>
+                    <div id="demoOutput" class="demo-output"></div>
+                </div>
+            </div>
+            <div id="demoErrors"></div>
+        </section>
+
+        <p class="footer">Built for GitHub Pages static hosting from the <code>docs/</code> folder.</p>
+    </main>
+
+    <script type="module">
+        const runtimeStatus = document.getElementById("runtimeStatus");
+        const demoInput = document.getElementById("demoInput");
+        const demoOutput = document.getElementById("demoOutput");
+        const demoErrors = document.getElementById("demoErrors");
+        const demoThemeClass = "hlts-github-dark";
+
+        const source = new URLSearchParams(location.search).get("source") === "local" ? "local" : "cdn";
+
+        function setStatus(kind, message) {
+            const dotClass = kind === "ok" ? "dot" : kind === "warn" ? "dot warn" : "dot error";
+            runtimeStatus.innerHTML = `<span class="${dotClass}"></span><span>${message}</span>`;
+        }
+
+        async function loadThemeCss() {
+            const candidates = source === "local"
+                ? [
+                    "./vendor/tree-sitter-ts-highlight/themes/github-dark.css",
+                    "../tree-sitter-ts-highlight/themes/github-dark.css",
+                    "https://cdn.jsdelivr.net/npm/tree-sitter-ts-highlight@0.1.1/themes/github-dark.css",
+                    "https://unpkg.com/tree-sitter-ts-highlight@0.1.1/themes/github-dark.css",
+                ]
+                : [
+                    "https://cdn.jsdelivr.net/npm/tree-sitter-ts-highlight@0.1.1/themes/github-dark.css",
+                    "https://unpkg.com/tree-sitter-ts-highlight@0.1.1/themes/github-dark.css",
+                ];
+
+            for (const href of candidates) {
+                try {
+                    await new Promise((resolve, reject) => {
+                        const link = document.createElement("link");
+                        link.rel = "stylesheet";
+                        link.href = href;
+                        link.onload = resolve;
+                        link.onerror = reject;
+                        document.head.appendChild(link);
+                    });
+                    return href;
+                } catch {
+                    continue;
+                }
+            }
+
+            throw new Error("Unable to load theme CSS from any source.");
+        }
+
+        function showError(error) {
+            const message = error instanceof Error ? `${error.message}\n${error.stack ?? ""}` : String(error);
+            demoErrors.innerHTML = `<div class="error-box">${message}</div>`;
+            setStatus("error", "Runtime failed to initialize");
+        }
+
+        const samples = {
+            ts: {
+                label: "TypeScript sample",
+                input: `const answer: number = 42;\nfunction double(n: number) {\n  return n * 2;\n}`,
+                render: ({ getHighlightedHtml }) =>
+                    getHighlightedHtml({
+                        code: `const answer: number = 42;\nfunction double(n: number) {\n  return n * 2;\n}`,
+                        language: "typescript",
+                    }),
+            },
+            tsx: {
+                label: "TSX sample",
+                input: `export function Button() {\n  return <button>{"Click"}</button>;\n}`,
+                render: ({ getHighlightedHtml }) =>
+                    getHighlightedHtml({
+                        code: `export function Button() {\n  return <button>{"Click"}</button>;\n}`,
+                        language: "typescript",
+                    }),
+            },
+            diff: {
+                label: "Diff sample",
+                input: `- const n = 1;\n+ const n = 2;`,
+                render: ({ getHighlightedDiffHtml }) =>
+                    getHighlightedDiffHtml({
+                        oldCode: "const n = 1;",
+                        newCode: "const n = 2;",
+                        language: "typescript",
+                        options: { view: "side-by-side" },
+                    }),
+            },
+        };
+
+        let api;
+
+        async function renderSample(key) {
+            const sample = samples[key];
+            if (!sample) {
+                throw new Error(`Unknown sample key: ${String(key)}`);
+            }
+            demoInput.textContent = sample.input;
+            demoOutput.className = `demo-output hlts ${demoThemeClass}`;
+            demoOutput.style.whiteSpace = key === "diff" ? "normal" : "pre";
+            demoOutput.innerHTML = sample.render(api);
+        }
+
+        try {
+            await loadThemeCss();
+            api = await import("tree-sitter-ts-highlight-svelte/highlight");
+
+            document.getElementById("sampleTs").addEventListener("click", () => renderSample("ts"));
+            document.getElementById("sampleTsx").addEventListener("click", () => renderSample("tsx"));
+            document.getElementById("sampleDiff").addEventListener("click", () => renderSample("diff"));
+
+            await renderSample("ts");
+            setStatus("ok", `Runtime ready (${source.toUpperCase()} mode)`);
+        } catch (error) {
+            showError(error);
+        }
+    </script>
+</body>
+
+</html>

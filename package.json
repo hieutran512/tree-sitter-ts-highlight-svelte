@@ -1,0 +1,61 @@
+{
+    "name": "tree-sitter-ts-highlight-svelte",
+    "version": "0.1.1",
+    "description": "Native Svelte wrapper components for tree-sitter-ts-highlight.",
+    "type": "module",
+    "svelte": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "svelte": "./dist/index.js",
+            "import": "./dist/index.js",
+            "default": "./dist/index.js"
+        }
+    },
+    "files": [
+        "dist",
+        "README.md"
+    ],
+    "scripts": {
+        "build": "svelte-package --input src --output dist",
+        "prepack": "npm run build",
+        "typecheck": "svelte-check --tsconfig ./tsconfig.json",
+        "test": "jest",
+        "test:watch": "jest --watch",
+        "docs:prepare": "tsx scripts/prepare-docs-runtime.ts",
+        "docs:serve": "npm run docs:prepare && http-server docs -p 4173 -c-1"
+    },
+    "peerDependencies": {
+        "svelte": "^5.0.0",
+        "tree-sitter-ts": "^0.1.1",
+        "tree-sitter-ts-highlight": "^0.1.1"
+    },
+    "devDependencies": {
+        "@sveltejs/package": "^2.3.7",
+        "@swc/core": "^1.15.11",
+        "@swc/jest": "^0.2.39",
+        "@types/jest": "^30.0.0",
+        "http-server": "^14.1.1",
+        "jest": "^30.2.0",
+        "svelte": "^5.38.10",
+        "svelte-check": "^4.3.1",
+        "tsx": "^4.20.5",
+        "typescript": "^5.4.0"
+    },
+    "publishConfig": {
+        "access": "public",
+        "provenance": true
+    },
+    "keywords": [
+        "svelte",
+        "tree-sitter",
+        "syntax-highlighting",
+        "typescript",
+        "code-highlighting"
+    ],
+    "license": "MIT",
+    "engines": {
+        "node": ">=18.0.0"
+    }
+}

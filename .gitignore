@@ -12,9 +12,6 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Generated docs artifacts
-docs/vendor/
-
 # OS/editor files
 .DS_Store
 Thumbs.db

@@ -1,6 +1,7 @@
 # tree-sitter-ts-highlight-svelte
 
-Native Svelte wrapper for [`tree-sitter-ts-highlight`](https://www.npmjs.com/package/tree-sitter-ts-highlight) with Svelte-rendered token nodes (no raw HTML injection).
+Native Svelte components and utilities for `tree-sitter-ts-highlight`.
+Use this package when you want syntax-highlighted code/diffs rendered as native Svelte nodes.
 
 ## Install
 
@@ -8,123 +9,67 @@ Native Svelte wrapper for [`tree-sitter-ts-highlight`](https://www.npmjs.com/pac
 npm install tree-sitter-ts-highlight-svelte tree-sitter-ts-highlight tree-sitter-ts
 ```
 
-Import a theme from the base package in your app entry:
+Import a theme once in your app entry:
 
 ```ts
 import "tree-sitter-ts-highlight/themes/github-dark.css";
 ```
 
-## Usage
+## Quick start
 
 ```svelte
 <script lang="ts">
   import { Highlight, HighlightDiff } from "tree-sitter-ts-highlight-svelte";
 
-  const before = `const n = 1;`;
-  const after = `const n = 2;`;
+  const oldCode = `const n = 1;`;
+  const newCode = `const n = 2;`;
 </script>
 
 <Highlight
-  code={`const n: number = 42;`}
+  code={`const total: number = 42;`}
   language="typescript"
   options={{ lineNumbers: true }}
 />
 
 <HighlightDiff
-  oldCode={before}
-  newCode={after}
+  oldCode={oldCode}
+  newCode={newCode}
   language="typescript"
   options={{ view: "side-by-side" }}
 />
 ```
 
-## API
+## Exports
 
-- `Highlight`: `<pre><code>` renderer for highlighted code.
-- `HighlightDiff`: native Svelte renderer for inline or side-by-side diffs.
-- `getHighlightedHtml`: utility returning highlighted HTML for custom rendering.
-- `getHighlightedDiffHtml`: utility returning highlighted diff HTML.
-- `createHighlightedHtmlStore`: derived store for reactive highlighted HTML.
-- `createHighlightedDiffHtmlStore`: derived store for reactive highlighted diff HTML.
+### Components
 
-All exports from `tree-sitter-ts-highlight` are re-exported by this package.
+- `Highlight`
+  - Props: `code`, `language`, `options?`, `preClassName?`, `codeClassName?`
+  - Renders highlighted code inside `<pre><code>`.
+- `HighlightDiff`
+  - Props: `oldCode`, `newCode`, `language`, `options?`, `containerClassName?`
+  - Renders inline or side-by-side diffs.
 
-## GitHub Pages
+### Utilities
 
-A static project page is included at `docs/index.html` with:
+- `getHighlightedHtml({ code, language, options? })`
+- `getHighlightedDiffHtml({ oldCode, newCode, language, options? })`
+- `createHighlightedHtmlStore({ code, language, options? })`
+- `createHighlightedDiffHtmlStore({ oldCode, newCode, language, options? })`
 
-- Library introduction
-- Documentation overview
-- Live utility usage demos backed by `getHighlightedHtml` / `getHighlightedDiffHtml`
-- Interactive examples that render highlighted output in-browser
+All exports from `tree-sitter-ts-highlight` are also re-exported.
 
-To host it on GitHub Pages:
+## Notes
 
-1. Push this repository to GitHub.
-2. Open **Settings → Pages**.
-3. Under **Build and deployment**, select **Deploy from a branch**.
-4. Choose your default branch and folder **`/docs`**, then save.
+- `language` is passed through to `tree-sitter-ts-highlight`.
+- `Highlight` always renders with `wrapInPre: false` internally to avoid nested `<pre>`.
+- For additional live demos and theme previews, use the upstream project page:
+  <https://github.com/hieutran512/tree-sitter-ts-highlight>
 
-Your page will be available at:
-
-`https://<your-github-username>.github.io/<your-repo-name>/`
-
-### Local PC testing for docs page
-
-The docs runtime supports two module sources:
-
-- default: npm CDN (`esm.sh`)
-- local: `docs/vendor/*` (prepared from local builds), then sibling package fallbacks
-
-`tree-sitter-ts` and `tree-sitter-ts-highlight` are resolved with fallbacks in this order:
-
-1. sibling folders (`../tree-sitter-ts` and `../tree-sitter-ts-highlight`)
-2. prepared local copies in `docs/vendor/`
-3. npm CDN (`esm.sh`)
-
-Theme CSS (`github-dark.css`) is loaded with fallbacks in this order:
-
-1. `docs/vendor/tree-sitter-ts-highlight/themes/github-dark.css`
-2. sibling `tree-sitter-ts-highlight/themes/github-dark.css`
-3. CDN (`jsdelivr`, then `unpkg`)
-
-To test locally before publishing:
-
-1. Build the package:
-  ```bash
-  npm run build
-  ```
-2. Serve `docs/` through an HTTP server (not `file://`):
-  ```bash
-  npm run docs:serve
-  ```
-3. Open:
-  - CDN mode: `http://127.0.0.1:4173`
-  - Local build mode: `http://127.0.0.1:4173?source=local`
-
-`npm run docs:serve` runs `docs:prepare` first, which copies available local build files into `docs/vendor/`.
-
-## Standalone package note
-
-This package is configured for independent GitHub/npm publishing.
-It does not use local `file:..` dependencies for `tree-sitter-ts` or `tree-sitter-ts-highlight`.
-
-## Build
+## Package scripts
 
 ```bash
 npm run build
-```
-
-Build output is generated to `dist/` via `svelte-package`.
-
-## Test
-
-```bash
+npm run typecheck
 npm test
-```
-
-Watch mode:
-
-```bash
-npm run test:watch
 ```
